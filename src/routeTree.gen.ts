@@ -10,33 +10,80 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BizHaqimizdaRouteImport } from './routes/biz-haqimizda'
+import { Route as MavzularRouteImport } from './routes/mavzular'
+import { Route as MaqolalarIndexRouteImport } from './routes/maqolalar.index'
+import { Route as MaqolalarSlugRouteImport } from './routes/maqolalar.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BizHaqimizdaRoute = BizHaqimizdaRouteImport.update({
+  id: '/biz-haqimizda',
+  path: '/biz-haqimizda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MavzularRoute = MavzularRouteImport.update({
+  id: '/mavzular',
+  path: '/mavzular',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MaqolalarIndexRoute = MaqolalarIndexRouteImport.update({
+  id: '/maqolalar/',
+  path: '/maqolalar/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MaqolalarSlugRoute = MaqolalarSlugRouteImport.update({
+  id: '/maqolalar/$slug',
+  path: '/maqolalar/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/biz-haqimizda': typeof BizHaqimizdaRoute
+  '/mavzular': typeof MavzularRoute
+  '/maqolalar/$slug': typeof MaqolalarSlugRoute
+  '/maqolalar/': typeof MaqolalarIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/biz-haqimizda': typeof BizHaqimizdaRoute
+  '/mavzular': typeof MavzularRoute
+  '/maqolalar/$slug': typeof MaqolalarSlugRoute
+  '/maqolalar': typeof MaqolalarIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/biz-haqimizda': typeof BizHaqimizdaRoute
+  '/mavzular': typeof MavzularRoute
+  '/maqolalar/$slug': typeof MaqolalarSlugRoute
+  '/maqolalar/': typeof MaqolalarIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    '/' | '/biz-haqimizda' | '/mavzular' | '/maqolalar/$slug' | '/maqolalar/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/biz-haqimizda' | '/mavzular' | '/maqolalar/$slug' | '/maqolalar'
+  id:
+    | '__root__'
+    | '/'
+    | '/biz-haqimizda'
+    | '/mavzular'
+    | '/maqolalar/$slug'
+    | '/maqolalar/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BizHaqimizdaRoute: typeof BizHaqimizdaRoute
+  MavzularRoute: typeof MavzularRoute
+  MaqolalarSlugRoute: typeof MaqolalarSlugRoute
+  MaqolalarIndexRoute: typeof MaqolalarIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +95,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/biz-haqimizda': {
+      id: '/biz-haqimizda'
+      path: '/biz-haqimizda'
+      fullPath: '/biz-haqimizda'
+      preLoaderRoute: typeof BizHaqimizdaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mavzular': {
+      id: '/mavzular'
+      path: '/mavzular'
+      fullPath: '/mavzular'
+      preLoaderRoute: typeof MavzularRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/maqolalar/': {
+      id: '/maqolalar/'
+      path: '/maqolalar'
+      fullPath: '/maqolalar/'
+      preLoaderRoute: typeof MaqolalarIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/maqolalar/$slug': {
+      id: '/maqolalar/$slug'
+      path: '/maqolalar/$slug'
+      fullPath: '/maqolalar/$slug'
+      preLoaderRoute: typeof MaqolalarSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BizHaqimizdaRoute: BizHaqimizdaRoute,
+  MavzularRoute: MavzularRoute,
+  MaqolalarSlugRoute: MaqolalarSlugRoute,
+  MaqolalarIndexRoute: MaqolalarIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
