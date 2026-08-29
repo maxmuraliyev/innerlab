@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ context }) => {
+    if (typeof document === "undefined") return;
     try {
       const { isAdmin } = await getMyAdminStatus();
       if (!isAdmin) {

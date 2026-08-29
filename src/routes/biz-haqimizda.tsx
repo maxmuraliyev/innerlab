@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
+import { subscribeEmail } from "@/lib/content.functions";
 
 export const Route = createFileRoute("/biz-haqimizda")({
   component: AboutPage,
@@ -59,10 +60,15 @@ function AboutPage() {
           </p>
           <form
             className="mt-8 flex flex-col gap-3 sm:flex-row"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              setSent(true);
-              setEmail("");
+              try {
+                await subscribeEmail({ data: { email } });
+                setSent(true);
+                setEmail("");
+              } catch (err) {
+                alert("Xatolik yuz berdi. Qayta urinib ko'ring.");
+              }
             }}
           >
             <input

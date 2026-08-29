@@ -110,7 +110,7 @@ export const getStats = createServerFn({ method: "GET" })
     await assertAdmin(context);
     const dayAgo = new Date(Date.now() - 86400000).toISOString();
     const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-    const [total, today, week, articles, subs, recent] = await Promise.all([
+    const [total, today, week, articles, subs, allVisitsRaw] = await Promise.all([
       context.supabase.from("visits").select("id", { count: "exact", head: true }),
       context.supabase.from("visits").select("id", { count: "exact", head: true }).gte("created_at", dayAgo),
       context.supabase.from("visits").select("id", { count: "exact", head: true }).gte("created_at", weekAgo),
@@ -118,29 +118,47 @@ export const getStats = createServerFn({ method: "GET" })
       context.supabase.from("subscribers").select("id", { count: "exact", head: true }),
       context.supabase
         .from("visits")
-        .select("created_at, device, ip")
+        .select("created_at, device, ip, browser, os, city, country")
         .gte("created_at", weekAgo)
         .order("created_at", { ascending: false })
-        .limit(2000),
+        .limit(3000),
     ]);
-    const rows = (recent.data ?? []) as { created_at: string; device: string | null; ip: string | null }[];
-    const byDay: Record<string, number> = {};
-    const byDevice: Record<string, number> = {};
+
+    const rows = (allVisitsRaw.data ?? []) as any[];
+
+    // Group visits by IP
+    const usersMap = new Map<string, any>();
     for (const r of rows) {
-      const day = r.created_at.slice(0, 10);
-      byDay[day] = (byDay[day] ?? 0) + 1;
-      const d = r.device ?? "Boshqa";
-      byDevice[d] = (byDevice[d] ?? 0) + 1;
+      if (!r.ip) continue;
+      if (!usersMap.has(r.ip)) {
+        usersMap.set(r.ip, {
+          ip: r.ip,
+          first_visit: r.created_at, // will be updated as we go back in time
+          last_visit: r.created_at, // The first row we encounter for this IP is the most recent (last visit)
+          device: r.device || "Noma'lum",
+          browser: r.browser || "Noma'lum",
+          os: r.os || "Noma'lum",
+          city: r.city,
+          country: r.country,
+          count: 0,
+        });
+      }
+      const u = usersMap.get(r.ip);
+      u.count++;
+      // Since it's ordered by descending created_at, the last row we see for an IP is their first visit
+      u.first_visit = r.created_at;
     }
+
+    const uniqueUsers = Array.from(usersMap.values());
+
     return {
       totalVisits: total.count ?? 0,
       todayVisits: today.count ?? 0,
       weekVisits: week.count ?? 0,
-      uniqueWeek: new Set(rows.map((r) => r.ip).filter(Boolean)).size,
+      uniqueWeek: uniqueUsers.length,
       articleCount: articles.count ?? 0,
       subscriberCount: subs.count ?? 0,
-      byDay: Object.entries(byDay).sort(([a], [b]) => a.localeCompare(b)),
-      byDevice: Object.entries(byDevice).sort((a, b) => b[1] - a[1]),
+      recentUsers: uniqueUsers.slice(0, 50), // Send top 50 recent unique users
     };
   });
 
