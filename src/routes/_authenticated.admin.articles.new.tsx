@@ -53,7 +53,10 @@ function ArticleEditor() {
     if (error) {
       alert("Rasm yuklashda xatolik");
     } else if (data) {
-      setForm((f) => ({ ...f, image_url: `/api/images/${data.path}` }));
+      const { data: publicUrlData } = supabase.storage
+        .from("article-images")
+        .getPublicUrl(data.path);
+      setForm((f) => ({ ...f, image_url: publicUrlData.publicUrl }));
     }
     setUploading(false);
   };
