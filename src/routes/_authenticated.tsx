@@ -1,11 +1,20 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, isRedirect } from "@tanstack/react-router";
 import { getMyAdminStatus } from "@/lib/admin.functions";
 import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ context }) => {
-    const { isAdmin } = await getMyAdminStatus();
-    if (!isAdmin) {
+    try {
+      const { isAdmin } = await getMyAdminStatus();
+      if (!isAdmin) {
+        throw redirect({
+          to: "/auth",
+        });
+      }
+    } catch (error) {
+      if (isRedirect(error)) {
+        throw error;
+      }
       throw redirect({
         to: "/auth",
       });
