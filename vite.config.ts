@@ -14,7 +14,7 @@ export default defineConfig({
     tanstackStart({
       server: { entry: "server" },
     }),
-    netlify(),
+    process.env.NETLIFY ? netlify() : null,
     react(),
   ],
 });
