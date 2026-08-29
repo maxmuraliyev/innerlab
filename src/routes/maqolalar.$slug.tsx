@@ -1,88 +1,69 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
-import { ArticleCard } from "@/components/ArticleCard";
-import { articles, getArticle } from "@/data/articles";
+import { getArticleBySlug } from "@/lib/content.functions";
 
 export const Route = createFileRoute("/maqolalar/$slug")({
-  loader: ({ params }) => {
-    const article = getArticle(params.slug);
+  loader: async ({ params }) => {
+    const article = await getArticleBySlug({ data: { slug: params.slug } });
     if (!article) throw notFound();
-    return { article };
+    return article;
   },
-  component: ArticlePage,
-  head: ({ params, loaderData }) => {
-    const title = loaderData ? `${loaderData.article.title} — Inner Lab` : "Maqola — Inner Lab";
-    const description = loaderData?.article.excerpt ?? "Inner Lab maqolasi.";
+  component: ArticleDetail,
+  head: ({ loaderData }) => {
+    if (!loaderData) return {};
     return {
       meta: [
-        { title },
-        { name: "description", content: description },
-        { property: "og:title", content: title },
-        { property: "og:description", content: description },
+        { title: `${loaderData.title} — Inner Lab` },
+        { name: "description", content: loaderData.excerpt },
+        { property: "og:title", content: `${loaderData.title} — Inner Lab` },
+        { property: "og:description", content: loaderData.excerpt },
         { property: "og:type", content: "article" },
-        { property: "og:url", content: `/maqolalar/${params.slug}` },
       ],
-      links: [{ rel: "canonical", href: `/maqolalar/${params.slug}` }],
-      scripts: loaderData
-        ? [
-            {
-              type: "application/ld+json",
-              children: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Article",
-                headline: loaderData.article.title,
-                description: loaderData.article.excerpt,
-                articleSection: loaderData.article.category,
-              }),
-            },
-          ]
-        : [],
     };
   },
 });
 
-function ArticlePage() {
-  const { article } = Route.useLoaderData();
-  const related = articles.filter((a) => a.slug !== article.slug).slice(0, 3);
+function ArticleDetail() {
+  const article = Route.useLoaderData();
 
   return (
     <div className="min-h-screen bg-cream text-ink/90">
       <SiteNav />
+      <article className="mx-auto max-w-3xl px-6 pt-20 pb-24">
+        <header className="mb-12">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="eyebrow rounded-full border border-green px-3 py-1 text-green">
+              {article.category}
+            </span>
+            <span className="text-sm font-medium text-ink/50">
+              {article.reading_time}
+            </span>
+          </div>
+          <h1 className="font-serif text-4xl leading-tight text-ink md:text-5xl lg:text-6xl">
+            {article.title}
+          </h1>
+          <p className="mt-6 text-xl leading-relaxed text-ink/70">
+            {article.excerpt}
+          </p>
+        </header>
 
-      <article className="mx-auto max-w-3xl px-6 pt-16 pb-20">
-        <Link to="/maqolalar" className="eyebrow text-green hover:opacity-70">
-          ← Maqolalar
-        </Link>
-        <h1 className="mt-6 font-serif text-4xl leading-tight text-ink md:text-5xl">
-          {article.title}
-        </h1>
-        <p className="mt-4 text-sm text-ink/50">
-          {article.category} · {article.date} · {article.readingTime}
-        </p>
-        <img
-          src={article.image}
-          alt={article.title}
-          width={1024}
-          height={768}
-          className="mt-10 aspect-[16/10] w-full rounded-2xl object-cover"
-        />
-        <div className="mt-10 space-y-6 text-lg leading-relaxed text-ink/80">
-          {article.body.map((p) => (
-            <p key={p.slice(0, 24)}>{p}</p>
+        {article.image_url && (
+          <div className="mb-16 aspect-[21/9] w-full overflow-hidden rounded-2xl">
+            <img
+              src={article.image_url}
+              alt={article.title}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
+
+        <div className="prose prose-lg prose-ink max-w-none prose-headings:font-serif prose-headings:font-normal prose-a:text-green prose-a:underline-offset-4 hover:prose-a:text-green/80 prose-img:rounded-xl">
+          {article.body.split("\n\n").map((p: string, i: number) => (
+            <p key={i}>{p}</p>
           ))}
         </div>
       </article>
-
-      <section className="mx-auto max-w-7xl border-t border-ink/10 px-6 py-20">
-        <h2 className="mb-12 font-serif text-3xl text-ink">Yana o‘qing</h2>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {related.map((a) => (
-            <ArticleCard key={a.slug} article={a} />
-          ))}
-        </div>
-      </section>
-
       <SiteFooter />
     </div>
   );

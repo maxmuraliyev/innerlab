@@ -2,10 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ArticleCard } from "@/components/ArticleCard";
-import { articles } from "@/data/articles";
+import { listArticles } from "@/lib/content.functions";
 import heroImg from "@/assets/hero.jpg";
 
 export const Route = createFileRoute("/")({
+  loader: async () => {
+    return await listArticles();
+  },
   component: Index,
   head: () => ({
     meta: [
@@ -28,6 +31,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const articles = Route.useLoaderData();
   const latest = articles.slice(0, 3);
 
   return (
@@ -108,7 +112,7 @@ function Index() {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {latest.map((a) => (
+          {latest.map((a: any) => (
             <ArticleCard key={a.slug} article={a} />
           ))}
         </div>

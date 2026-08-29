@@ -119,6 +119,28 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    // Only track on the client
+    if (typeof window === "undefined") return;
+
+    // Track on initial load
+    import("@/lib/content.functions").then(({ trackVisit }) => {
+      const data: any = { path: window.location.pathname };
+      if (document.referrer) data.referrer = document.referrer;
+      trackVisit({ data }).catch(() => {});
+    });
+
+    // Track on subsequent navigation
+    const unsubscribe = router.subscribe("onResolved", (e) => {
+      import("@/lib/content.functions").then(({ trackVisit }) => {
+        trackVisit({ data: { path: e.toLocation.pathname } }).catch(() => {});
+      });
+    });
+
+    return unsubscribe;
+  }, [router]);
 
   return (
     <QueryClientProvider client={queryClient}>

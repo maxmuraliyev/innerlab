@@ -2,9 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ArticleCard } from "@/components/ArticleCard";
-import { articles } from "@/data/articles";
+import { listArticles } from "@/lib/content.functions";
 
 export const Route = createFileRoute("/maqolalar/")({
+  loader: async () => {
+    return await listArticles();
+  },
   component: ArticlesPage,
   head: () => ({
     meta: [
@@ -27,6 +30,8 @@ export const Route = createFileRoute("/maqolalar/")({
 });
 
 function ArticlesPage() {
+  const articles = Route.useLoaderData();
+  
   return (
     <div className="min-h-screen bg-cream text-ink/90">
       <SiteNav />
@@ -37,7 +42,7 @@ function ArticlesPage() {
       </header>
       <section className="mx-auto max-w-7xl px-6 pb-24">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {articles.map((a) => (
+          {articles.map((a: any) => (
             <ArticleCard key={a.slug} article={a} />
           ))}
         </div>

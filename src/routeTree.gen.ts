@@ -10,14 +10,30 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BizHaqimizdaRouteImport } from './routes/biz-haqimizda'
 import { Route as MavzularRouteImport } from './routes/mavzular'
 import { Route as MaqolalarIndexRouteImport } from './routes/maqolalar.index'
 import { Route as MaqolalarSlugRouteImport } from './routes/maqolalar.$slug'
+import { Route as MavzularThemeRouteImport } from './routes/mavzular.$theme'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated.admin.index'
+import { Route as AuthenticatedAdminSubscribersRouteImport } from './routes/_authenticated.admin.subscribers'
+import { Route as AuthenticatedAdminArticlesIndexRouteImport } from './routes/_authenticated.admin.articles.index'
+import { Route as AuthenticatedAdminArticlesNewRouteImport } from './routes/_authenticated.admin.articles.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BizHaqimizdaRoute = BizHaqimizdaRouteImport.update({
@@ -40,48 +56,125 @@ const MaqolalarSlugRoute = MaqolalarSlugRouteImport.update({
   path: '/maqolalar/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MavzularThemeRoute = MavzularThemeRouteImport.update({
+  id: '/$theme',
+  path: '/$theme',
+  getParentRoute: () => MavzularRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminSubscribersRoute =
+  AuthenticatedAdminSubscribersRouteImport.update({
+    id: '/admin/subscribers',
+    path: '/admin/subscribers',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminArticlesIndexRoute =
+  AuthenticatedAdminArticlesIndexRouteImport.update({
+    id: '/admin/articles/',
+    path: '/admin/articles/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminArticlesNewRoute =
+  AuthenticatedAdminArticlesNewRouteImport.update({
+    id: '/admin/articles/new',
+    path: '/admin/articles/new',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/biz-haqimizda': typeof BizHaqimizdaRoute
-  '/mavzular': typeof MavzularRoute
+  '/mavzular': typeof MavzularRouteWithChildren
   '/maqolalar/$slug': typeof MaqolalarSlugRoute
+  '/mavzular/$theme': typeof MavzularThemeRoute
   '/maqolalar/': typeof MaqolalarIndexRoute
+  '/admin/subscribers': typeof AuthenticatedAdminSubscribersRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/articles/new': typeof AuthenticatedAdminArticlesNewRoute
+  '/admin/articles/': typeof AuthenticatedAdminArticlesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/biz-haqimizda': typeof BizHaqimizdaRoute
-  '/mavzular': typeof MavzularRoute
+  '/mavzular': typeof MavzularRouteWithChildren
   '/maqolalar/$slug': typeof MaqolalarSlugRoute
+  '/mavzular/$theme': typeof MavzularThemeRoute
   '/maqolalar': typeof MaqolalarIndexRoute
+  '/admin/subscribers': typeof AuthenticatedAdminSubscribersRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/articles/new': typeof AuthenticatedAdminArticlesNewRoute
+  '/admin/articles': typeof AuthenticatedAdminArticlesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/auth': typeof AuthRoute
   '/biz-haqimizda': typeof BizHaqimizdaRoute
-  '/mavzular': typeof MavzularRoute
+  '/mavzular': typeof MavzularRouteWithChildren
   '/maqolalar/$slug': typeof MaqolalarSlugRoute
+  '/mavzular/$theme': typeof MavzularThemeRoute
   '/maqolalar/': typeof MaqolalarIndexRoute
+  '/_authenticated/admin/subscribers': typeof AuthenticatedAdminSubscribersRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/articles/new': typeof AuthenticatedAdminArticlesNewRoute
+  '/_authenticated/admin/articles/': typeof AuthenticatedAdminArticlesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/biz-haqimizda' | '/mavzular' | '/maqolalar/$slug' | '/maqolalar/'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/biz-haqimizda' | '/mavzular' | '/maqolalar/$slug' | '/maqolalar'
-  id:
-    | '__root__'
     | '/'
+    | '/auth'
     | '/biz-haqimizda'
     | '/mavzular'
     | '/maqolalar/$slug'
+    | '/mavzular/$theme'
     | '/maqolalar/'
+    | '/admin/subscribers'
+    | '/admin/'
+    | '/admin/articles/new'
+    | '/admin/articles/'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/auth'
+    | '/biz-haqimizda'
+    | '/mavzular'
+    | '/maqolalar/$slug'
+    | '/mavzular/$theme'
+    | '/maqolalar'
+    | '/admin/subscribers'
+    | '/admin'
+    | '/admin/articles/new'
+    | '/admin/articles'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/biz-haqimizda'
+    | '/mavzular'
+    | '/maqolalar/$slug'
+    | '/mavzular/$theme'
+    | '/maqolalar/'
+    | '/_authenticated/admin/subscribers'
+    | '/_authenticated/admin/'
+    | '/_authenticated/admin/articles/new'
+    | '/_authenticated/admin/articles/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AuthRoute: typeof AuthRoute
   BizHaqimizdaRoute: typeof BizHaqimizdaRoute
-  MavzularRoute: typeof MavzularRoute
+  MavzularRoute: typeof MavzularRouteWithChildren
   MaqolalarSlugRoute: typeof MaqolalarSlugRoute
   MaqolalarIndexRoute: typeof MaqolalarIndexRoute
 }
@@ -93,6 +186,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/biz-haqimizda': {
@@ -123,13 +230,80 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MaqolalarSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mavzular/$theme': {
+      id: '/mavzular/$theme'
+      path: '/$theme'
+      fullPath: '/mavzular/$theme'
+      preLoaderRoute: typeof MavzularThemeRouteImport
+      parentRoute: typeof MavzularRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/subscribers': {
+      id: '/_authenticated/admin/subscribers'
+      path: '/admin/subscribers'
+      fullPath: '/admin/subscribers'
+      preLoaderRoute: typeof AuthenticatedAdminSubscribersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/articles/': {
+      id: '/_authenticated/admin/articles/'
+      path: '/admin/articles'
+      fullPath: '/admin/articles/'
+      preLoaderRoute: typeof AuthenticatedAdminArticlesIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/articles/new': {
+      id: '/_authenticated/admin/articles/new'
+      path: '/admin/articles/new'
+      fullPath: '/admin/articles/new'
+      preLoaderRoute: typeof AuthenticatedAdminArticlesNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedAdminSubscribersRoute: typeof AuthenticatedAdminSubscribersRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminArticlesNewRoute: typeof AuthenticatedAdminArticlesNewRoute
+  AuthenticatedAdminArticlesIndexRoute: typeof AuthenticatedAdminArticlesIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminSubscribersRoute: AuthenticatedAdminSubscribersRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminArticlesNewRoute: AuthenticatedAdminArticlesNewRoute,
+  AuthenticatedAdminArticlesIndexRoute: AuthenticatedAdminArticlesIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
+interface MavzularRouteChildren {
+  MavzularThemeRoute: typeof MavzularThemeRoute
+}
+
+const MavzularRouteChildren: MavzularRouteChildren = {
+  MavzularThemeRoute: MavzularThemeRoute,
+}
+
+const MavzularRouteWithChildren = MavzularRoute._addFileChildren(
+  MavzularRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AuthRoute: AuthRoute,
   BizHaqimizdaRoute: BizHaqimizdaRoute,
-  MavzularRoute: MavzularRoute,
+  MavzularRoute: MavzularRouteWithChildren,
   MaqolalarSlugRoute: MaqolalarSlugRoute,
   MaqolalarIndexRoute: MaqolalarIndexRoute,
 }

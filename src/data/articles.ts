@@ -14,13 +14,13 @@ export type Article = {
 };
 
 export const categories = [
-  { slug: "psixologiya", name: "Psixologiya", emoji: "🧠", desc: "Inson xulqi va fikrlash mexanizmlari" },
-  { slug: "farovonlik", name: "Farovonlik", emoji: "❤️", desc: "Mental va jismoniy sog‘liq" },
-  { slug: "talim", name: "Ta’lim", emoji: "📚", desc: "Samarali o‘rganish usullari" },
-  { slug: "uyqu-stress", name: "Uyqu va stress", emoji: "😴", desc: "Dam olish, stress va motivatsiya" },
-  { slug: "xarakter", name: "Xarakter va odatlar", emoji: "🧩", desc: "Odatlar qanday shakllanadi" },
-  { slug: "rivojlanish", name: "Shaxsiy rivojlanish", emoji: "🌱", desc: "O‘sish va o‘zlikni anglash" },
-  { slug: "qarorlar", name: "Qarorlar", emoji: "🎯", desc: "Tanlov va hayotiy yo‘nalish" },
+  { slug: "psixologiya", name: "Psixologiya", desc: "Inson xulqi va fikrlash mexanizmlari" },
+  { slug: "farovonlik", name: "Farovonlik", desc: "Mental va jismoniy sog‘liq" },
+  { slug: "talim", name: "Ta’lim", desc: "Samarali o‘rganish usullari" },
+  { slug: "uyqu-stress", name: "Uyqu va stress", desc: "Dam olish, stress va motivatsiya" },
+  { slug: "xarakter", name: "Xarakter va odatlar", desc: "Odatlar qanday shakllanadi" },
+  { slug: "rivojlanish", name: "Shaxsiy rivojlanish", desc: "O‘sish va o‘zlikni anglash" },
+  { slug: "qarorlar", name: "Qarorlar", desc: "Tanlov va hayotiy yo‘nalish" },
 ];
 
 export const articles: Article[] = [

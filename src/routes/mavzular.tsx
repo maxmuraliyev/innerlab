@@ -1,9 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
-import { categories, articles } from "@/data/articles";
+import { categories } from "@/data/articles";
+import { listArticles } from "@/lib/content.functions";
 
 export const Route = createFileRoute("/mavzular")({
+  loader: async () => {
+    return await listArticles();
+  },
   component: TopicsPage,
   head: () => ({
     meta: [
@@ -26,6 +30,8 @@ export const Route = createFileRoute("/mavzular")({
 });
 
 function TopicsPage() {
+  const articles = Route.useLoaderData();
+
   return (
     <div className="min-h-screen bg-cream text-ink/90">
       <SiteNav />
@@ -38,14 +44,17 @@ function TopicsPage() {
       <section className="mx-auto max-w-7xl px-6 pb-24">
         <div className="grid gap-px bg-ink/10 md:grid-cols-2 lg:grid-cols-3">
           {categories.map((c) => {
-            const count = articles.filter((a) => a.category === c.name).length;
+            const count = articles.filter((a: any) => a.category === c.name).length;
             return (
-              <div key={c.slug} className="bg-cream p-8">
-                <div className="text-2xl">{c.emoji}</div>
-                <h2 className="mt-4 font-serif text-2xl text-ink">{c.name}</h2>
+              <Link
+                key={c.slug}
+                to={`/mavzular/${c.slug}`}
+                className="group bg-cream p-8 transition-colors hover:bg-ink/5"
+              >
+                <h2 className="font-serif text-2xl text-ink group-hover:text-green">{c.name}</h2>
                 <p className="mt-2 text-sm text-ink/60">{c.desc}</p>
                 <p className="mt-6 text-xs text-ink/40">{count} ta maqola</p>
-              </div>
+              </Link>
             );
           })}
         </div>
