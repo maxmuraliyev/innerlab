@@ -7,7 +7,7 @@ export function ArticleCard({ article }: { article: Article }) {
       <Link to="/maqolalar/$slug" params={{ slug: article.slug }} className="block">
         <div className="mb-6 aspect-[4/3] w-full overflow-hidden rounded-xl bg-muted">
           <img
-            src={article.image}
+            src={(article as any).image_url || article.image}
             alt={article.title}
             loading="lazy"
             width={1024}
@@ -22,7 +22,7 @@ export function ArticleCard({ article }: { article: Article }) {
           </h3>
           <p className="line-clamp-2 text-sm text-ink/60">{article.excerpt}</p>
           <p className="text-xs text-ink/40">
-            {article.date} · {article.readingTime}
+            {article.date || ((article as any).created_at ? new Date((article as any).created_at).toLocaleDateString("uz-UZ", { year: "numeric", month: "long", day: "numeric" }) : "")} · {article.readingTime || (article as any).reading_time}
           </p>
         </div>
       </Link>
