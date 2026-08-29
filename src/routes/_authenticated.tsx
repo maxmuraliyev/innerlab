@@ -87,20 +87,20 @@ function AuthenticatedLayout() {
             onClick={() => setIsSidebarOpen(false)}
             className="rounded-md px-3 py-2 text-sm hover:bg-cream [&.active]:bg-ink [&.active]:text-cream"
           >
-            Maqolalar
+            Articles
           </Link>
           <Link
             to="/admin/subscribers"
             onClick={() => setIsSidebarOpen(false)}
             className="rounded-md px-3 py-2 text-sm hover:bg-cream [&.active]:bg-ink [&.active]:text-cream"
           >
-            Obunachilar
+            Subscribers
           </Link>
           <Link
             to="/"
             className="mt-8 rounded-md px-3 py-2 text-sm hover:bg-cream text-ink/60"
           >
-            Asosiy saytga qaytish
+            Back to main site
           </Link>
         </nav>
       </aside>
@@ -129,11 +129,11 @@ function AuthenticatedLayout() {
           {showDropdown && (
             <div className="absolute right-0 top-12 z-50 w-80 rounded-xl border border-ink/10 bg-white shadow-lg overflow-hidden">
               <div className="border-b border-ink/10 bg-cream/30 px-4 py-3 font-semibold">
-                Bildirishnomalar
+                Notifications
               </div>
               <div className="max-h-96 overflow-y-auto">
                 {notifications.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-ink/50">Hozircha bildirishnomalar yo'q</div>
+                  <div className="p-4 text-center text-sm text-ink/50">No notifications yet</div>
                 ) : (
                   notifications.map(n => (
                     <div 
@@ -143,7 +143,7 @@ function AuthenticatedLayout() {
                     >
                       <p className="font-semibold">{n.title}</p>
                       <p className="text-ink/80 mt-1 whitespace-pre-wrap">{n.message}</p>
-                      <p className="text-ink/40 mt-2 text-[10px]">{new Date(n.created_at).toLocaleString('uz-UZ')}</p>
+                      <p className="text-ink/40 mt-2 text-[10px]">{new Date(n.created_at).toLocaleString('en-US')}</p>
                     </div>
                   ))
                 )}

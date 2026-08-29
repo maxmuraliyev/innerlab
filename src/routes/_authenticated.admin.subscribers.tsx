@@ -17,21 +17,21 @@ function AdminSubscribers() {
     listSubscribers().then(setSubscribers).catch(console.error);
   }, []);
 
-  if (!subscribers) return <div className="p-8 text-ink/50">Yuklanmoqda...</div>;
+  if (!subscribers) return <div className="p-8 text-ink/50">Loading...</div>;
 
   const handleSendEmail = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!confirm(`Rostdan ham ${subscribers.length} ta obunachiga xat yubormoqchimisiz?`)) return;
+    if (!confirm(`Are you sure you want to send an email to ${subscribers.length} subscribers?`)) return;
     
     setSending(true);
     setResult(null);
     try {
       const res = await sendBulkEmail({ data: { subject, html } });
-      setResult(`Muvaffaqiyatli: ${res.sent} ta xat yuborildi.`);
+      setResult(`Success: ${res.sent} emails sent.`);
       setSubject("");
       setHtml("");
     } catch (err: any) {
-      setResult(`Xatolik: ${err.message}`);
+      setResult(`Error: ${err.message}`);
     } finally {
       setSending(false);
     }
@@ -40,17 +40,17 @@ function AdminSubscribers() {
   const copyEmails = () => {
     const emails = subscribers.map((s) => s.email).join(", ");
     navigator.clipboard.writeText(emails);
-    alert("Barcha emaillar nusxalandi!");
+    alert("All emails copied!");
   };
 
   const handleDelete = async (id: string, email: string) => {
-    if (!confirm(`Rostdan ham ${email} pochtasini obunachilar ro'yxatidan o'chirmoqchimisiz?`)) return;
+    if (!confirm(`Are you sure you want to delete ${email} from the subscribers list?`)) return;
     try {
       await deleteSubscriber({ data: { id } });
       setSubscribers((prev) => prev ? prev.filter(s => s.id !== id) : null);
     } catch (e) {
       console.error(e);
-      alert("O'chirishda xatolik yuz berdi");
+      alert("An error occurred while deleting");
     }
   };
 
@@ -58,12 +58,12 @@ function AdminSubscribers() {
     <div className="grid gap-8 lg:grid-cols-2">
       <div>
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="font-serif text-3xl font-bold">Obunachilar</h1>
+          <h1 className="font-serif text-3xl font-bold">Subscribers</h1>
           <button
             onClick={copyEmails}
             className="rounded-lg bg-ink/10 px-4 py-2 text-sm font-medium hover:bg-ink/20"
           >
-            Nusxalash (Copy All)
+            Copy All
           </button>
         </div>
 
@@ -72,8 +72,8 @@ function AdminSubscribers() {
             <thead className="border-b border-ink/10 bg-ink/5">
               <tr>
                 <th className="px-6 py-4 font-medium text-ink/70">Email</th>
-                <th className="px-6 py-4 font-medium text-ink/70">Sana</th>
-                <th className="px-6 py-4 font-medium text-ink/70 text-right">Amallar</th>
+                <th className="px-6 py-4 font-medium text-ink/70">Date</th>
+                <th className="px-6 py-4 font-medium text-ink/70 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
@@ -81,14 +81,14 @@ function AdminSubscribers() {
                 <tr key={sub.id} className="hover:bg-cream/50">
                   <td className="px-6 py-4 font-medium">{sub.email}</td>
                   <td className="px-6 py-4 text-ink/70">
-                    {new Date(sub.created_at).toLocaleDateString("uz-UZ")}
+                    {new Date(sub.created_at).toLocaleDateString("en-US")}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button 
                       onClick={() => handleDelete(sub.id, sub.email)}
                       className="text-red-500 hover:text-red-700 text-sm"
                     >
-                      O'chirish
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -96,7 +96,7 @@ function AdminSubscribers() {
               {subscribers.length === 0 && (
                 <tr>
                   <td colSpan={3} className="px-6 py-8 text-center text-ink/50">
-                    Obunachilar yo'q.
+                    No subscribers.
                   </td>
                 </tr>
               )}
@@ -107,17 +107,16 @@ function AdminSubscribers() {
 
       <div>
         <div className="mb-8">
-          <h2 className="font-serif text-2xl font-bold">Ommaviy xabar yuborish</h2>
+          <h2 className="font-serif text-2xl font-bold">Bulk email sending</h2>
           <p className="mt-2 text-sm text-ink/60">
-            Barcha obunachilarga bitta tugma orqali elektron pochta jo'natishingiz mumkin.
-            Resend orqali ishlaydi.
+            You can send an email to all subscribers with one click. Works via Resend.
           </p>
         </div>
 
         <form onSubmit={handleSendEmail} className="space-y-4 rounded-xl bg-white p-6 shadow-sm">
           <div>
             <label className="mb-1 block text-sm font-medium text-ink/70">
-              Sarlavha (Subject)
+              Subject
             </label>
             <input
               type="text"
@@ -129,7 +128,7 @@ function AdminSubscribers() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-ink/70">
-              Xabar (HTML formatda yozish mumkin)
+              Message (HTML allowed)
             </label>
             <textarea
               value={html}
@@ -137,12 +136,12 @@ function AdminSubscribers() {
               className="w-full rounded-lg border border-ink/10 bg-cream/30 px-4 py-2 outline-none focus:border-green font-mono text-sm"
               rows={10}
               required
-              placeholder="<h1>Salom</h1><p>Yangi maqola chiqdi!</p>"
+              placeholder="<h1>Hello</h1><p>New article is out!</p>"
             />
           </div>
           
           {result && (
-            <div className={`rounded-lg p-4 text-sm ${result.startsWith("Muvaffaqiyatli") ? "bg-green/10 text-green" : "bg-red-50 text-red-600"}`}>
+            <div className={`rounded-lg p-4 text-sm ${result.startsWith("Success") ? "bg-green/10 text-green" : "bg-red-50 text-red-600"}`}>
               {result}
             </div>
           )}
@@ -152,7 +151,7 @@ function AdminSubscribers() {
             disabled={sending || subscribers.length === 0}
             className="w-full rounded-lg bg-green py-3 font-medium text-white hover:bg-green/90 disabled:opacity-50"
           >
-            {sending ? "Yuborilmoqda..." : "Barchasiga yuborish"}
+            {sending ? "Sending..." : "Send to all"}
           </button>
         </form>
       </div>

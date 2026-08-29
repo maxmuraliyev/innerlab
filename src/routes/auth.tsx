@@ -35,7 +35,7 @@ function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-cream px-4 text-ink">
       <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl">
         <h1 className="mb-6 text-center font-serif text-3xl text-ink">
-          Kirish
+          Sign In
         </h1>
         <form onSubmit={handleSignIn} className="space-y-4">
           <div>
@@ -52,7 +52,7 @@ function AuthPage() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-ink/70">
-              Parol
+              Password
             </label>
             <input
               type="password"
@@ -68,7 +68,7 @@ function AuthPage() {
             disabled={loading}
             className="w-full rounded-lg bg-green py-2 font-medium text-white hover:bg-green/90 disabled:opacity-50"
           >
-            {loading ? "Kirilmoqda..." : "Kirish"}
+            {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
       </div>

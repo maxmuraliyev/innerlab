@@ -26,7 +26,7 @@ function AdminArticleForm() {
     category: categories[0]?.name || "",
     excerpt: "",
     body: "",
-    reading_time: "5 daqiqa",
+    reading_time: "5 minutes",
     published: true,
     image_url: "",
   });
@@ -46,7 +46,7 @@ function AdminArticleForm() {
             category: article.category || categories[0]?.name || "",
             excerpt: article.excerpt || "",
             body: article.body || "",
-            reading_time: article.reading_time || "5 daqiqa",
+            reading_time: article.reading_time || "5 minutes",
             published: article.published ?? true,
             image_url: article.image_url || "",
           });
@@ -69,7 +69,7 @@ function AdminArticleForm() {
       .upload(filename, file);
 
     if (error) {
-      alert("Rasm yuklashda xatolik");
+      alert("Error uploading image");
     } else if (data) {
       const { data: publicUrlData } = supabase.storage
         .from("article-images")
@@ -86,7 +86,7 @@ function AdminArticleForm() {
       await saveArticle({ data: { ...form, id: existing?.id } });
       navigate({ to: "/admin/articles" });
     } catch (err: any) {
-      alert(err.message || "Xatolik yuz berdi");
+      alert(err.message || "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -96,13 +96,13 @@ function AdminArticleForm() {
     <div className="max-w-3xl">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="font-serif text-3xl font-bold">
-          {existing ? "Maqolani tahrirlash" : "Yangi maqola"}
+          {existing ? "Edit article" : "New article"}
         </h1>
         <Link
           to="/admin/articles"
           className="text-sm font-medium text-ink/60 hover:text-ink"
         >
-          Bekor qilish
+          Cancel
         </Link>
       </div>
 
@@ -110,7 +110,7 @@ function AdminArticleForm() {
         <div className="grid gap-6 md:grid-cols-2">
           <div>
             <label className="mb-1 block text-sm font-medium text-ink/70">
-              Sarlavha
+              Title
             </label>
             <input
               type="text"
@@ -144,7 +144,7 @@ function AdminArticleForm() {
         <div className="grid gap-6 md:grid-cols-2">
           <div>
             <label className="mb-1 block text-sm font-medium text-ink/70">
-              Kategoriya (Mavzu)
+              Category (Theme)
             </label>
             <select
               value={form.category}
@@ -152,7 +152,7 @@ function AdminArticleForm() {
               className="w-full rounded-lg border border-ink/10 bg-cream/30 px-4 py-2 outline-none focus:border-green"
               required
             >
-              <option value="">Tanlang...</option>
+              <option value="">Select...</option>
               {categories.map((c) => (
                 <option key={c.slug} value={c.name}>
                   {c.name}
@@ -162,7 +162,7 @@ function AdminArticleForm() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-ink/70">
-              O'qish vaqti
+              Reading time
             </label>
             <input
               type="text"
@@ -176,7 +176,7 @@ function AdminArticleForm() {
 
         <div>
           <label className="mb-1 block text-sm font-medium text-ink/70">
-            Qisqa ta'rif (Excerpt)
+            Short description (Excerpt)
           </label>
           <textarea
             value={form.excerpt}
@@ -188,7 +188,7 @@ function AdminArticleForm() {
 
         <div>
           <label className="mb-1 block text-sm font-medium text-ink/70">
-            Asosiy matn
+            Main text
           </label>
           <textarea
             value={form.body}
@@ -201,7 +201,7 @@ function AdminArticleForm() {
 
         <div>
           <label className="mb-1 block text-sm font-medium text-ink/70">
-            Muqova rasmi
+            Cover image
           </label>
           <div className="flex items-center gap-4">
             <input
@@ -210,10 +210,10 @@ function AdminArticleForm() {
               onChange={handleUpload}
               className="text-sm"
             />
-            {uploading && <span className="text-sm text-ink/50">Yuklanmoqda...</span>}
+            {uploading && <span className="text-sm text-ink/50">Loading...</span>}
           </div>
           {form.image_url && (
-            <img src={form.image_url} alt="Muqova" className="mt-4 h-32 rounded-lg object-cover" />
+            <img src={form.image_url} alt="Cover" className="mt-4 h-32 rounded-lg object-cover" />
           )}
         </div>
 
@@ -226,7 +226,7 @@ function AdminArticleForm() {
             className="rounded text-green focus:ring-green"
           />
           <label htmlFor="published" className="text-sm font-medium text-ink/70">
-            Chop etish (saytda ko'rsatish)
+            Publish (show on site)
           </label>
         </div>
 
@@ -235,7 +235,7 @@ function AdminArticleForm() {
           disabled={loading}
           className="w-full rounded-lg bg-green py-3 font-medium text-white hover:bg-green/90 disabled:opacity-50"
         >
-          {loading ? "Saqlanmoqda..." : "Saqlash"}
+          {loading ? "Saving..." : "Save"}
         </button>
       </form>
     </div>
