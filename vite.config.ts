@@ -10,10 +10,10 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   plugins: [
-    tailwindcss(),
     tanstackStart({
       server: { entry: "server" },
     }),
+    tailwindcss(),
     process.env.NETLIFY ? netlify() : null,
     react(),
   ],
