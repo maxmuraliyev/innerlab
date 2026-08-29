@@ -15,7 +15,7 @@ export const listArticles = createServerFn({ method: "GET" })
       .select(LIST_COLUMNS)
       .eq("published", true)
       .order("created_at", { ascending: false });
-    if (data.category) query = query.eq("category", data.category);
+    if (data.category) query = query.ilike("category", data.category);
     const { data: rows, error } = await query;
     if (error) throw new Error(error.message);
     return rows ?? [];
