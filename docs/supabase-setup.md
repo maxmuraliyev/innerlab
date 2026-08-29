@@ -88,8 +88,9 @@ GRANT ALL ON public.visits TO service_role;
 ALTER TABLE public.visits ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admins read visits" ON public.visits FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'));
 
--- You will need to create the 'article-images' bucket manually in the Supabase Storage dashboard before running these policies.
--- Create a new bucket named 'article-images', leave it Private.
+-- You will need to create the 'article-images' bucket manually in the Supabase Storage dashboard before running these policies, OR run the following SQL:
+INSERT INTO storage.buckets (id, name, public) VALUES ('article-images', 'article-images', false);
+
 CREATE POLICY "admins upload article images" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'article-images' AND public.has_role(auth.uid(), 'admin'));
 CREATE POLICY "admins read article images" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'article-images' AND public.has_role(auth.uid(), 'admin'));
 CREATE POLICY "admins delete article images" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'article-images' AND public.has_role(auth.uid(), 'admin'));
