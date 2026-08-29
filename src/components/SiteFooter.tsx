@@ -8,7 +8,7 @@ export function SiteFooter() {
           <Logo />
         </div>
         <p className="font-serif text-sm italic text-ink/50">
-          “Inson ichki dunyosi uning hayotini qanday shakllantiradi?”
+          “How does the human inner world shape their life?”
         </p>
         <div className="flex gap-6">
           <a href="#" className="eyebrow hover:text-green">

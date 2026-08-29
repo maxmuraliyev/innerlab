@@ -4,28 +4,28 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { categories } from "@/data/articles";
 import { listArticles } from "@/lib/content.functions";
 
-export const Route = createFileRoute("/mavzular/")({
+export const Route = createFileRoute("/themes/")({
   loader: async () => {
     return await listArticles();
   },
   component: TopicsPage,
   head: () => ({
     meta: [
-      { title: "Mavzular — Inner Lab" },
+      { title: "Themes — Inner Lab" },
       {
         name: "description",
         content:
-          "Psixologiya, farovonlik, ta’lim, uyqu va stress, xarakter, shaxsiy rivojlanish va qarorlar — Inner Lab mavzulari.",
+          "Psychology, well-being, education, sleep and stress, character, personal development and decisions — Inner Lab themes.",
       },
-      { property: "og:title", content: "Mavzular — Inner Lab" },
+      { property: "og:title", content: "Themes — Inner Lab" },
       {
         property: "og:description",
-        content: "Inner Lab o‘rganadigan yetti asosiy yo‘nalish.",
+        content: "The seven main areas explored by Inner Lab.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/mavzular" },
+      { property: "og:url", content: "/themes" },
     ],
-    links: [{ rel: "canonical", href: "/mavzular" }],
+    links: [{ rel: "canonical", href: "/themes" }],
   }),
 });
 
@@ -36,8 +36,8 @@ function TopicsPage() {
     <div className="min-h-screen bg-cream text-ink/90">
       <SiteNav />
       <header className="mx-auto max-w-7xl px-6 pt-20 pb-12">
-        <span className="eyebrow text-green">Yo‘nalishlar</span>
-        <h1 className="mt-4 font-serif text-5xl text-ink md:text-6xl">Mavzular</h1>
+        <span className="eyebrow text-green">Directions</span>
+        <h1 className="mt-4 font-serif text-5xl text-ink md:text-6xl">Themes</h1>
         <div className="mt-6 h-1 w-20 bg-green" />
       </header>
 
@@ -48,20 +48,20 @@ function TopicsPage() {
             return (
               <Link
                 key={c.slug}
-                to="/mavzular/$theme"
+                to="/themes/$theme"
                 params={{ theme: c.slug }}
                 className="group rounded-2xl border border-ink/10 bg-white p-8 shadow-sm transition-all hover:border-green/30 hover:shadow-md"
               >
                 <h2 className="font-serif text-2xl text-ink group-hover:text-green">{c.name}</h2>
                 <p className="mt-2 text-sm text-ink/60">{c.desc}</p>
-                <p className="mt-6 text-xs text-ink/40">{count} ta maqola</p>
+                <p className="mt-6 text-xs text-ink/40">{count} articles</p>
               </Link>
             );
           })}
         </div>
         <div className="mt-12">
-          <Link to="/maqolalar" className="eyebrow border-b-2 border-green pb-1 hover:text-green">
-            Barcha maqolalar
+          <Link to="/articles" className="eyebrow border-b-2 border-green pb-1 hover:text-green">
+            All articles
           </Link>
         </div>
       </section>

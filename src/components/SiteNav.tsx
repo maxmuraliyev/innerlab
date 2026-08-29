@@ -4,9 +4,9 @@ import { Menu, X } from "lucide-react";
 import { Logo } from "./Logo";
 
 const links = [
-  { to: "/maqolalar", label: "Maqolalar" },
-  { to: "/mavzular", label: "Mavzular" },
-  { to: "/biz-haqimizda", label: "Biz haqimizda" },
+  { to: "/articles", label: "Articles" },
+  { to: "/themes", label: "Themes" },
+  { to: "/about", label: "About Us" },
 ];
 
 export function SiteNav() {
@@ -32,11 +32,11 @@ export function SiteNav() {
         
         <div className="hidden md:block">
           <Link
-            to="/biz-haqimizda"
+            to="/about"
             hash="obuna"
             className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-cream transition-all hover:bg-ink/90"
           >
-            Obuna bo‘lish
+            Subscribe
           </Link>
         </div>
 
@@ -64,12 +64,12 @@ export function SiteNav() {
               </Link>
             ))}
             <Link
-              to="/biz-haqimizda"
+              to="/about"
               hash="obuna"
               onClick={() => setIsMobileMenuOpen(false)}
               className="inline-block text-center mt-4 rounded-full bg-ink px-5 py-3 text-base font-medium text-cream transition-all hover:bg-ink/90"
             >
-              Obuna bo‘lish
+              Subscribe
             </Link>
           </div>
         </div>

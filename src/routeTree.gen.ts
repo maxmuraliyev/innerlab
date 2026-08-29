@@ -11,12 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as BizHaqimizdaRouteImport } from './routes/biz-haqimizda'
-import { Route as MaqolalarIndexRouteImport } from './routes/maqolalar.index'
-import { Route as MaqolalarSlugRouteImport } from './routes/maqolalar.$slug'
-import { Route as MavzularIndexRouteImport } from './routes/mavzular.index'
-import { Route as MavzularThemeRouteImport } from './routes/mavzular.$theme'
+import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
+import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
+import { Route as ThemesIndexRouteImport } from './routes/themes.index'
+import { Route as ThemesThemeRouteImport } from './routes/themes.$theme'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated.admin.index'
 import { Route as AuthenticatedAdminSubscribersRouteImport } from './routes/_authenticated.admin.subscribers'
 import { Route as AuthenticatedAdminArticlesIndexRouteImport } from './routes/_authenticated.admin.articles.index'
@@ -31,34 +31,34 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BizHaqimizdaRoute = BizHaqimizdaRouteImport.update({
-  id: '/biz-haqimizda',
-  path: '/biz-haqimizda',
+const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
+  id: '/articles/',
+  path: '/articles/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MaqolalarIndexRoute = MaqolalarIndexRouteImport.update({
-  id: '/maqolalar/',
-  path: '/maqolalar/',
+const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
+  id: '/articles/$slug',
+  path: '/articles/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MaqolalarSlugRoute = MaqolalarSlugRouteImport.update({
-  id: '/maqolalar/$slug',
-  path: '/maqolalar/$slug',
+const ThemesIndexRoute = ThemesIndexRouteImport.update({
+  id: '/themes/',
+  path: '/themes/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MavzularIndexRoute = MavzularIndexRouteImport.update({
-  id: '/mavzular/',
-  path: '/mavzular/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MavzularThemeRoute = MavzularThemeRouteImport.update({
-  id: '/mavzular/$theme',
-  path: '/mavzular/$theme',
+const ThemesThemeRoute = ThemesThemeRouteImport.update({
+  id: '/themes/$theme',
+  path: '/themes/$theme',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
@@ -87,12 +87,12 @@ const AuthenticatedAdminArticlesNewRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
-  '/biz-haqimizda': typeof BizHaqimizdaRoute
-  '/maqolalar/$slug': typeof MaqolalarSlugRoute
-  '/mavzular/$theme': typeof MavzularThemeRoute
-  '/maqolalar/': typeof MaqolalarIndexRoute
-  '/mavzular/': typeof MavzularIndexRoute
+  '/articles/$slug': typeof ArticlesSlugRoute
+  '/themes/$theme': typeof ThemesThemeRoute
+  '/articles/': typeof ArticlesIndexRoute
+  '/themes/': typeof ThemesIndexRoute
   '/admin/subscribers': typeof AuthenticatedAdminSubscribersRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/articles/new': typeof AuthenticatedAdminArticlesNewRoute
@@ -100,12 +100,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
-  '/biz-haqimizda': typeof BizHaqimizdaRoute
-  '/maqolalar/$slug': typeof MaqolalarSlugRoute
-  '/mavzular/$theme': typeof MavzularThemeRoute
-  '/maqolalar': typeof MaqolalarIndexRoute
-  '/mavzular': typeof MavzularIndexRoute
+  '/articles/$slug': typeof ArticlesSlugRoute
+  '/themes/$theme': typeof ThemesThemeRoute
+  '/articles': typeof ArticlesIndexRoute
+  '/themes': typeof ThemesIndexRoute
   '/admin/subscribers': typeof AuthenticatedAdminSubscribersRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/articles/new': typeof AuthenticatedAdminArticlesNewRoute
@@ -115,12 +115,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
-  '/biz-haqimizda': typeof BizHaqimizdaRoute
-  '/maqolalar/$slug': typeof MaqolalarSlugRoute
-  '/mavzular/$theme': typeof MavzularThemeRoute
-  '/maqolalar/': typeof MaqolalarIndexRoute
-  '/mavzular/': typeof MavzularIndexRoute
+  '/articles/$slug': typeof ArticlesSlugRoute
+  '/themes/$theme': typeof ThemesThemeRoute
+  '/articles/': typeof ArticlesIndexRoute
+  '/themes/': typeof ThemesIndexRoute
   '/_authenticated/admin/subscribers': typeof AuthenticatedAdminSubscribersRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/articles/new': typeof AuthenticatedAdminArticlesNewRoute
@@ -130,12 +130,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/auth'
-    | '/biz-haqimizda'
-    | '/maqolalar/$slug'
-    | '/mavzular/$theme'
-    | '/maqolalar/'
-    | '/mavzular/'
+    | '/articles/$slug'
+    | '/themes/$theme'
+    | '/articles/'
+    | '/themes/'
     | '/admin/subscribers'
     | '/admin/'
     | '/admin/articles/new'
@@ -143,12 +143,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/auth'
-    | '/biz-haqimizda'
-    | '/maqolalar/$slug'
-    | '/mavzular/$theme'
-    | '/maqolalar'
-    | '/mavzular'
+    | '/articles/$slug'
+    | '/themes/$theme'
+    | '/articles'
+    | '/themes'
     | '/admin/subscribers'
     | '/admin'
     | '/admin/articles/new'
@@ -157,12 +157,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/about'
     | '/auth'
-    | '/biz-haqimizda'
-    | '/maqolalar/$slug'
-    | '/mavzular/$theme'
-    | '/maqolalar/'
-    | '/mavzular/'
+    | '/articles/$slug'
+    | '/themes/$theme'
+    | '/articles/'
+    | '/themes/'
     | '/_authenticated/admin/subscribers'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/articles/new'
@@ -172,12 +172,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
-  BizHaqimizdaRoute: typeof BizHaqimizdaRoute
-  MaqolalarSlugRoute: typeof MaqolalarSlugRoute
-  MavzularThemeRoute: typeof MavzularThemeRoute
-  MaqolalarIndexRoute: typeof MaqolalarIndexRoute
-  MavzularIndexRoute: typeof MavzularIndexRoute
+  ArticlesSlugRoute: typeof ArticlesSlugRoute
+  ThemesThemeRoute: typeof ThemesThemeRoute
+  ArticlesIndexRoute: typeof ArticlesIndexRoute
+  ThemesIndexRoute: typeof ThemesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -196,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -203,39 +210,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/biz-haqimizda': {
-      id: '/biz-haqimizda'
-      path: '/biz-haqimizda'
-      fullPath: '/biz-haqimizda'
-      preLoaderRoute: typeof BizHaqimizdaRouteImport
+    '/articles/': {
+      id: '/articles/'
+      path: '/articles'
+      fullPath: '/articles/'
+      preLoaderRoute: typeof ArticlesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/maqolalar/': {
-      id: '/maqolalar/'
-      path: '/maqolalar'
-      fullPath: '/maqolalar/'
-      preLoaderRoute: typeof MaqolalarIndexRouteImport
+    '/articles/$slug': {
+      id: '/articles/$slug'
+      path: '/articles/$slug'
+      fullPath: '/articles/$slug'
+      preLoaderRoute: typeof ArticlesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/maqolalar/$slug': {
-      id: '/maqolalar/$slug'
-      path: '/maqolalar/$slug'
-      fullPath: '/maqolalar/$slug'
-      preLoaderRoute: typeof MaqolalarSlugRouteImport
+    '/themes/': {
+      id: '/themes/'
+      path: '/themes'
+      fullPath: '/themes/'
+      preLoaderRoute: typeof ThemesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/mavzular/': {
-      id: '/mavzular/'
-      path: '/mavzular'
-      fullPath: '/mavzular/'
-      preLoaderRoute: typeof MavzularIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mavzular/$theme': {
-      id: '/mavzular/$theme'
-      path: '/mavzular/$theme'
-      fullPath: '/mavzular/$theme'
-      preLoaderRoute: typeof MavzularThemeRouteImport
+    '/themes/$theme': {
+      id: '/themes/$theme'
+      path: '/themes/$theme'
+      fullPath: '/themes/$theme'
+      preLoaderRoute: typeof ThemesThemeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/': {
@@ -290,12 +290,12 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
-  BizHaqimizdaRoute: BizHaqimizdaRoute,
-  MaqolalarSlugRoute: MaqolalarSlugRoute,
-  MavzularThemeRoute: MavzularThemeRoute,
-  MaqolalarIndexRoute: MaqolalarIndexRoute,
-  MavzularIndexRoute: MavzularIndexRoute,
+  ArticlesSlugRoute: ArticlesSlugRoute,
+  ThemesThemeRoute: ThemesThemeRoute,
+  ArticlesIndexRoute: ArticlesIndexRoute,
+  ThemesIndexRoute: ThemesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

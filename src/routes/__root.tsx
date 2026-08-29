@@ -74,7 +74,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Inner Lab" },
-      { name: "description", content: "Inson ichki dunyosi uning hayotini qanday shakllantiradi?" },
+      { name: "description", content: "How does the human inner world shape their life?" },
       { property: "og:site_name", content: "Inner Lab" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
