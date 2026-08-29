@@ -71,11 +71,12 @@ export const saveArticle = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => articleSchema.parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { id, ...rest } = data;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { id, ...rest } = data as any;
     const payload = { ...rest, image_url: data.image_url || null };
     const { error } = id
-      ? await context.supabase.from("articles").update(payload).eq("id", id)
-      : await context.supabase.from("articles").insert(payload);
+      ? await supabaseAdmin.from("articles").update(payload).eq("id", id)
+      : await supabaseAdmin.from("articles").insert(payload);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -85,7 +86,8 @@ export const deleteArticle = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string }) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { error } = await context.supabase.from("articles").delete().eq("id", data.id);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("articles").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -240,7 +242,8 @@ export const deleteSubscriber = createServerFn({ method: "POST" })
   .inputValidator((input: { id: string }) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const { error } = await context.supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
       .from("subscribers")
       .delete()
       .eq("id", data.id);
