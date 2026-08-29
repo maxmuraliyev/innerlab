@@ -1,31 +1,34 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { listAllArticles, deleteArticle } from "@/lib/admin.functions";
-import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/admin/articles/")({
-  loader: async () => {
-    return await listAllArticles();
-  },
   component: AdminArticles,
 });
 
 function AdminArticles() {
-  const articles = Route.useLoaderData();
-  const router = useRouter();
+  const [articles, setArticles] = useState<any[] | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const router = useRouter();
+  
+  useEffect(() => {
+    listAllArticles().then(setArticles).catch(console.error);
+  }, []);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Rostdan ham ushbu maqolani o'chirmoqchimisiz?")) return;
     setDeleting(id);
     try {
       await deleteArticle({ data: { id } });
-      router.invalidate();
+      listAllArticles().then(setArticles).catch(console.error);
     } catch (err) {
       alert("Xatolik yuz berdi");
     } finally {
       setDeleting(null);
     }
   };
+
+  if (!articles) return <div className="p-8 text-ink/50">Yuklanmoqda...</div>;
 
   return (
     <div>

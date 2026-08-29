@@ -43,6 +43,20 @@ export const subscribeEmail = createServerFn({ method: "POST" })
       .from("subscribers")
       .upsert({ email: data.email.toLowerCase() }, { onConflict: "email" });
     if (error) throw new Error("Obunani saqlab bo‘lmadi");
+
+    try {
+      const { sendTelegramMessage } = await import("./telegram");
+      await sendTelegramMessage(`🎉 <b>Yangi obunachi!</b>\nEmail: ${data.email.toLowerCase()}`);
+      
+      await supabaseAdmin.from("notifications").insert({
+        title: "Yangi obunachi",
+        message: `${data.email.toLowerCase()} obuna bo'ldi`,
+        type: "subscriber"
+      });
+    } catch (e) {
+      console.error("Notification hatoligi", e);
+    }
+
     return { ok: true };
   });
 

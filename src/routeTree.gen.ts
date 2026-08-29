@@ -57,9 +57,9 @@ const MavzularIndexRoute = MavzularIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const MavzularThemeRoute = MavzularThemeRouteImport.update({
-  id: '/$theme',
-  path: '/$theme',
-  getParentRoute: () => MavzularRoute,
+  id: '/mavzular/$theme',
+  path: '/mavzular/$theme',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
@@ -175,6 +175,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BizHaqimizdaRoute: typeof BizHaqimizdaRoute
   MaqolalarSlugRoute: typeof MaqolalarSlugRoute
+  MavzularThemeRoute: typeof MavzularThemeRoute
   MaqolalarIndexRoute: typeof MaqolalarIndexRoute
   MavzularIndexRoute: typeof MavzularIndexRoute
 }
@@ -232,10 +233,10 @@ declare module '@tanstack/react-router' {
     }
     '/mavzular/$theme': {
       id: '/mavzular/$theme'
-      path: '/$theme'
+      path: '/mavzular/$theme'
       fullPath: '/mavzular/$theme'
       preLoaderRoute: typeof MavzularThemeRouteImport
-      parentRoute: typeof MavzularRoute
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
@@ -292,6 +293,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BizHaqimizdaRoute: BizHaqimizdaRoute,
   MaqolalarSlugRoute: MaqolalarSlugRoute,
+  MavzularThemeRoute: MavzularThemeRoute,
   MaqolalarIndexRoute: MaqolalarIndexRoute,
   MavzularIndexRoute: MavzularIndexRoute,
 }

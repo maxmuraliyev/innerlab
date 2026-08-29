@@ -1,24 +1,23 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { getStats } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
-  loader: async () => {
-    return await getStats();
-  },
   component: AdminDashboard,
 });
 
 function AdminDashboard() {
-  const stats = Route.useLoaderData();
-  const router = useRouter();
+  const [stats, setStats] = useState<any>(null);
 
   useEffect(() => {
+    getStats().then(setStats).catch(console.error);
     const interval = setInterval(() => {
-      router.invalidate();
+      getStats().then(setStats).catch(console.error);
     }, 10000);
     return () => clearInterval(interval);
-  }, [router]);
+  }, []);
+
+  if (!stats) return <div className="p-8 text-ink/50">Yuklanmoqda...</div>;
 
   const isOnline = (dateStr: string) => {
     return Date.now() - new Date(dateStr).getTime() < 5 * 60 * 1000;
@@ -33,20 +32,18 @@ function AdminDashboard() {
     });
   };
 
+  const activeNow = stats.recentUsers?.filter((u: any) => isOnline(u.last_visit)).length || 0;
+
   return (
     <div>
       <div className="mb-8 flex items-center justify-between">
         <h1 className="font-serif text-3xl font-bold">Dashboard</h1>
         <div className="flex items-center gap-2 text-sm text-green">
-          <span className="relative flex h-3 w-3">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green opacity-75"></span>
-            <span className="relative inline-flex h-3 w-3 rounded-full bg-green"></span>
-          </span>
           Jonli ulanish (har 10s yangilanadi)
         </div>
       </div>
 
-      <div className="mb-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-12 grid gap-6 md:grid-cols-2 lg:grid-cols-5">
         <div className="rounded-xl bg-white p-6 shadow-sm">
           <p className="text-sm font-medium text-ink/60">Umumiy tashriflar</p>
           <p className="mt-2 text-3xl font-bold">{stats.totalVisits}</p>
@@ -62,6 +59,16 @@ function AdminDashboard() {
         <div className="rounded-xl bg-white p-6 shadow-sm">
           <p className="text-sm font-medium text-ink/60">Unikal (hafta)</p>
           <p className="mt-2 text-3xl font-bold">{stats.uniqueWeek}</p>
+        </div>
+        <div className="rounded-xl bg-white p-6 shadow-sm border border-green/20">
+          <p className="text-sm font-medium text-ink/60 flex items-center gap-2">
+            <span className="relative flex h-3 w-3">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green opacity-75"></span>
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-green"></span>
+            </span>
+            Hozir saytda
+          </p>
+          <p className="mt-2 text-3xl font-bold text-green">{activeNow}</p>
         </div>
       </div>
 

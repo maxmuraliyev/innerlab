@@ -7,8 +7,9 @@ import { listArticles } from "@/lib/content.functions";
 
 export const Route = createFileRoute("/mavzular/$theme")({
   loader: async ({ params }) => {
-    const themeParam = params.theme.toLowerCase().replace(/\s+/g, '-');
-    const category = categories.find((c) => c.slug === themeParam || c.slug === params.theme);
+    const decodedTheme = decodeURIComponent(params.theme).toLowerCase();
+    const themeParam = decodedTheme.replace(/\s+/g, '-');
+    const category = categories.find((c) => c.slug === themeParam || c.slug === decodedTheme || c.name.toLowerCase() === decodedTheme || c.slug === params.theme);
     if (!category) throw notFound();
     const articles = await listArticles({ data: { category: category.name } });
     return { category, articles };

@@ -1,43 +1,61 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { saveArticle, listAllArticles } from "@/lib/admin.functions";
-import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { categories } from "@/data/articles";
 import { z } from "zod";
 
 export const Route = createFileRoute("/_authenticated/admin/articles/new")({
-  validateSearch: (search: Record<string, unknown>) => {
-    return {
-      id: typeof search.id === "string" ? search.id : undefined,
-    };
-  },
-  loaderDeps: ({ search: { id } }) => ({ id }),
-  loader: async ({ deps: { id } }) => {
-    if (!id) return null;
-    const all = await listAllArticles();
-    return all.find((a) => a.id === id) || null;
-  },
-  component: ArticleEditor,
+  validateSearch: (search) =>
+    z
+      .object({
+        id: z.string().uuid().optional(),
+      })
+      .parse(search),
+  component: AdminArticleForm,
 });
 
-function ArticleEditor() {
-  const existing = Route.useLoaderData();
-  const search = Route.useSearch();
+function AdminArticleForm() {
+  const { id } = Route.useSearch();
   const navigate = useNavigate();
-
+  const [existing, setExisting] = useState<any>(undefined); // undefined = loading
+  
   const [form, setForm] = useState({
-    title: existing?.title || "",
-    slug: existing?.slug || "",
-    category: existing?.category || categories[0]?.name || "",
-    excerpt: existing?.excerpt || "",
-    body: existing?.body || "",
-    reading_time: existing?.reading_time || "5 daqiqa",
-    published: existing?.published ?? true,
-    image_url: existing?.image_url || "",
+    title: "",
+    slug: "",
+    category: categories[0]?.name || "",
+    excerpt: "",
+    body: "",
+    reading_time: "5 daqiqa",
+    published: true,
+    image_url: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      listAllArticles().then(all => {
+        const article = all.find(a => a.id === id);
+        setExisting(article || null);
+        if (article) {
+          setForm({
+            title: article.title || "",
+            slug: article.slug || "",
+            category: article.category || categories[0]?.name || "",
+            excerpt: article.excerpt || "",
+            body: article.body || "",
+            reading_time: article.reading_time || "5 daqiqa",
+            published: article.published ?? true,
+            image_url: article.image_url || "",
+          });
+        }
+      }).catch(console.error);
+    } else {
+      setExisting(null);
+    }
+  }, [id]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

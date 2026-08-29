@@ -110,10 +110,8 @@ export const getStats = createServerFn({ method: "GET" })
     await assertAdmin(context);
     const dayAgo = new Date(Date.now() - 86400000).toISOString();
     const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-    const [total, today, week, articles, subs, allVisitsRaw] = await Promise.all([
-      context.supabase.from("visits").select("id", { count: "exact", head: true }),
-      context.supabase.from("visits").select("id", { count: "exact", head: true }).gte("created_at", dayAgo),
-      context.supabase.from("visits").select("id", { count: "exact", head: true }).gte("created_at", weekAgo),
+    const [totalIPs, articles, subs, allVisitsRaw] = await Promise.all([
+      context.supabase.from("visits").select("ip").limit(5000).order("created_at", { ascending: false }),
       context.supabase.from("articles").select("id", { count: "exact", head: true }),
       context.supabase.from("subscribers").select("id", { count: "exact", head: true }),
       context.supabase
@@ -125,6 +123,11 @@ export const getStats = createServerFn({ method: "GET" })
     ]);
 
     const rows = (allVisitsRaw.data ?? []) as any[];
+
+    // Calculate unique IPs
+    const totalUnique = new Set((totalIPs.data || []).map(r => r.ip).filter(Boolean)).size;
+    const todayUnique = new Set(rows.filter(r => r.created_at >= dayAgo).map(r => r.ip).filter(Boolean)).size;
+    const weekUnique = new Set(rows.map(r => r.ip).filter(Boolean)).size;
 
     // Group visits by IP
     const usersMap = new Map<string, any>();
@@ -152,14 +155,72 @@ export const getStats = createServerFn({ method: "GET" })
     const uniqueUsers = Array.from(usersMap.values());
 
     return {
-      totalVisits: total.count ?? 0,
-      todayVisits: today.count ?? 0,
-      weekVisits: week.count ?? 0,
+      totalVisits: totalUnique,
+      todayVisits: todayUnique,
+      weekVisits: weekUnique,
       uniqueWeek: uniqueUsers.length,
       articleCount: articles.count ?? 0,
       subscriberCount: subs.count ?? 0,
       recentUsers: uniqueUsers.slice(0, 50), // Send top 50 recent unique users
     };
+  });
+
+export const checkAndGenerateDailyStats = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    
+    // Check if we already generated stats for yesterday
+    const yesterdayDateStr = new Date(Date.now() - 86400000).toISOString().split('T')[0]; // YYYY-MM-DD
+    const title = `Kunlik hisobot: ${yesterdayDateStr}`;
+    
+    const { data: existing } = await context.supabase
+      .from("notifications")
+      .select("id")
+      .eq("type", "daily_stats")
+      .eq("title", title)
+      .maybeSingle();
+      
+    if (existing) return { ok: true, generated: false };
+    
+    // Generate it
+    const startOfYesterday = new Date();
+    startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+    startOfYesterday.setHours(0, 0, 0, 0);
+    
+    const endOfYesterday = new Date();
+    endOfYesterday.setDate(endOfYesterday.getDate() - 1);
+    endOfYesterday.setHours(23, 59, 59, 999);
+    
+    const startIso = startOfYesterday.toISOString();
+    const endIso = endOfYesterday.toISOString();
+    
+    const [visitsData, subsData] = await Promise.all([
+      context.supabase.from("visits").select("ip").gte("created_at", startIso).lte("created_at", endIso),
+      context.supabase.from("subscribers").select("id", { count: "exact", head: true }).gte("created_at", startIso).lte("created_at", endIso)
+    ]);
+    
+    const uniqueVisits = new Set((visitsData.data || []).map(r => r.ip).filter(Boolean)).size;
+    const newSubs = subsData.count || 0;
+    
+    const message = `📊 <b>Kunlik hisobot</b>\n📅 Sana: ${yesterdayDateStr}\n👀 Unikal tashriflar: ${uniqueVisits}\n👥 Yangi obunachilar: ${newSubs}`;
+    
+    // Insert notification
+    await context.supabase.from("notifications").insert({
+      title,
+      message: `Kecha saytga ${uniqueVisits} ta unikal odam kirdi va ${newSubs} ta yangi obunachi qo'shildi.`,
+      type: "daily_stats"
+    });
+    
+    // Send Telegram
+    try {
+      const { sendTelegramMessage } = await import("./telegram");
+      await sendTelegramMessage(message);
+    } catch (e) {
+      console.error(e);
+    }
+    
+    return { ok: true, generated: true };
   });
 
 export const listSubscribers = createServerFn({ method: "GET" })
@@ -172,6 +233,19 @@ export const listSubscribers = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     return data ?? [];
+  });
+
+export const deleteSubscriber = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { error } = await context.supabase
+      .from("subscribers")
+      .delete()
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 export const sendBulkEmail = createServerFn({ method: "POST" })
@@ -214,4 +288,32 @@ export const sendBulkEmail = createServerFn({ method: "POST" })
     }
 
     return { ok: true, sent: sentCount };
+  });
+
+export const listNotifications = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("notifications")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const markNotificationAsRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("notifications")
+      .update({ is_read: true })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });

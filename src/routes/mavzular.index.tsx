@@ -42,14 +42,15 @@ function TopicsPage() {
       </header>
 
       <section className="mx-auto max-w-7xl px-6 pb-24">
-        <div className="grid gap-px bg-ink/10 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {categories.map((c) => {
             const count = articles.filter((a: any) => a.category === c.name).length;
             return (
               <Link
                 key={c.slug}
-                to={`/mavzular/${c.slug}`}
-                className="group bg-cream p-8 transition-colors hover:bg-ink/5"
+                to="/mavzular/$theme"
+                params={{ theme: c.slug }}
+                className="group rounded-2xl border border-ink/10 bg-white p-8 shadow-sm transition-all hover:border-green/30 hover:shadow-md"
               >
                 <h2 className="font-serif text-2xl text-ink group-hover:text-green">{c.name}</h2>
                 <p className="mt-2 text-sm text-ink/60">{c.desc}</p>

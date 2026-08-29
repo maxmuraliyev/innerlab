@@ -44,7 +44,7 @@ function Index() {
             <span className="eyebrow mb-6 inline-block rounded-full border border-green px-3 py-1 italic text-green">
               Tadqiqot va tushunish
             </span>
-            <h1 className="mb-8 font-serif text-5xl leading-[1.1] text-ink md:text-7xl">
+            <h1 className="mb-8 font-serif text-4xl leading-[1.1] text-ink md:text-7xl">
               Inson ichki dunyosi uning hayotini{" "}
               <span className="italic text-green">qanday shakllantiradi?</span>
             </h1>
@@ -98,9 +98,9 @@ function Index() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="mb-12 flex items-end justify-between">
+        <div className="mb-12 flex flex-col items-start gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <h2 className="font-serif text-4xl text-ink">So‘nggi maqolalar</h2>
+            <h2 className="font-serif text-3xl md:text-4xl text-ink">So‘nggi maqolalar</h2>
             <div className="mt-4 h-1 w-20 bg-green" />
           </div>
           <Link

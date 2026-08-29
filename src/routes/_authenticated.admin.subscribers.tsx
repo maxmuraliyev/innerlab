@@ -1,20 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { listSubscribers, sendBulkEmail } from "@/lib/admin.functions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { listSubscribers, sendBulkEmail, deleteSubscriber } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/subscribers")({
-  loader: async () => {
-    return await listSubscribers();
-  },
   component: AdminSubscribers,
 });
 
 function AdminSubscribers() {
-  const subscribers = Route.useLoaderData();
+  const [subscribers, setSubscribers] = useState<any[] | null>(null);
   const [subject, setSubject] = useState("");
   const [html, setHtml] = useState("");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+
+  useEffect(() => {
+    listSubscribers().then(setSubscribers).catch(console.error);
+  }, []);
+
+  if (!subscribers) return <div className="p-8 text-ink/50">Yuklanmoqda...</div>;
 
   const handleSendEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +43,17 @@ function AdminSubscribers() {
     alert("Barcha emaillar nusxalandi!");
   };
 
+  const handleDelete = async (id: string, email: string) => {
+    if (!confirm(`Rostdan ham ${email} pochtasini obunachilar ro'yxatidan o'chirmoqchimisiz?`)) return;
+    try {
+      await deleteSubscriber({ data: { id } });
+      setSubscribers((prev) => prev ? prev.filter(s => s.id !== id) : null);
+    } catch (e) {
+      console.error(e);
+      alert("O'chirishda xatolik yuz berdi");
+    }
+  };
+
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       <div>
@@ -59,6 +73,7 @@ function AdminSubscribers() {
               <tr>
                 <th className="px-6 py-4 font-medium text-ink/70">Email</th>
                 <th className="px-6 py-4 font-medium text-ink/70">Sana</th>
+                <th className="px-6 py-4 font-medium text-ink/70 text-right">Amallar</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
@@ -68,11 +83,19 @@ function AdminSubscribers() {
                   <td className="px-6 py-4 text-ink/70">
                     {new Date(sub.created_at).toLocaleDateString("uz-UZ")}
                   </td>
+                  <td className="px-6 py-4 text-right">
+                    <button 
+                      onClick={() => handleDelete(sub.id, sub.email)}
+                      className="text-red-500 hover:text-red-700 text-sm"
+                    >
+                      O'chirish
+                    </button>
+                  </td>
                 </tr>
               ))}
               {subscribers.length === 0 && (
                 <tr>
-                  <td colSpan={2} className="px-6 py-8 text-center text-ink/50">
+                  <td colSpan={3} className="px-6 py-8 text-center text-ink/50">
                     Obunachilar yo'q.
                   </td>
                 </tr>
